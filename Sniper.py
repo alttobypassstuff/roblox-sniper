@@ -24,11 +24,7 @@ def get_username(user_id):
         print(f"Failed to fetch username for user {user_id}")
         return 'Unknown'
 
-config = load_config()
-webhook_url = config.get('webhook_url')
-user_ids = config.get('user_ids', [])
-
-def send_message_for_user(user_id):
+def send_message_for_user(user_id, webhook_url):
     presence_url = f'https://presence.roblox.com/v1/presence/users'
     data = {'userIds': [user_id]}
     response = requests.post(presence_url, json=data)
@@ -80,7 +76,15 @@ def send_message_for_user(user_id):
     else:
         print(f"Failed to fetch presence information for user {user_id}")
 
-while True:
-    for user_id in user_ids:
-        send_message_for_user(user_id)
-    time.sleep(20)
+def main():
+    while True:
+        config = load_config()
+        webhook_url = config.get('webhook_url')
+        user_ids = config.get('user_ids', [])
+        
+        for user_id in user_ids:
+            send_message_for_user(user_id, webhook_url)
+        time.sleep(300)
+
+if __name__ == "__main__":
+    main()
