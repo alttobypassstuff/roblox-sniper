@@ -33,6 +33,7 @@ def send_message_for_user(user_id):
                 "content": None,
                 "embeds": [
                     {
+                        "title": f"Roblox Profile: https://www.roblox.com/users/{user_id}/profile",
                         "color": None,
                         "fields": [
                             {
@@ -51,9 +52,6 @@ def send_message_for_user(user_id):
                                 "inline": False
                             }
                         ],
-                        "footer": {
-                            "text": f"Roblox Profile: https://www.roblox.com/users/{user_id}/profile"
-                        },
                         "author": {
                             "name": "User in-game"
                         }
