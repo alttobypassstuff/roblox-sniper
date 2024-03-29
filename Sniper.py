@@ -15,6 +15,15 @@ def load_config():
         config = json.load(f)
     return config
 
+def get_username(user_id):
+    response = requests.get(f"https://users.roblox.com/v1/users/{user_id}")
+    if response.status_code == 200:
+        user_info = response.json()
+        return user_info.get('name', 'Unknown')
+    else:
+        print(f"Failed to fetch username for user {user_id}")
+        return 'Unknown'
+
 config = load_config()
 webhook_url = config.get('webhook_url')
 user_ids = config.get('user_ids', [])
@@ -29,6 +38,7 @@ def send_message_for_user(user_id):
         if user_presence['userPresenceType'] == 2:
             place_id = user_presence['placeId']
             game_id = user_presence['gameId']
+            username = get_username(user_id)
             message = {
                 "content": None,
                 "embeds": [
@@ -36,6 +46,11 @@ def send_message_for_user(user_id):
                         "title": f"Roblox Profile: https://www.roblox.com/users/{user_id}/profile",
                         "color": None,
                         "fields": [
+                            {
+                                "name": "**Username**",
+                                "value": "```{}```".format(username),
+                                "inline": True
+                            },
                             {
                                 "name": "**Place ID**",
                                 "value": "```{}```".format(place_id),
@@ -53,7 +68,7 @@ def send_message_for_user(user_id):
                             }
                         ],
                         "author": {
-                            "name": "User in-game"
+                            "name": get_username(user_id)
                         }
                     }
                 ],
@@ -61,7 +76,7 @@ def send_message_for_user(user_id):
             }
             send_discord_message(webhook_url, message)
         else:
-            print(f"User {user_id} is not in-game")
+            print(f"User {get_username(user_id)} is not in-game")
     else:
         print(f"Failed to fetch presence information for user {user_id}")
 
